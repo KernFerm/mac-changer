@@ -7,6 +7,8 @@ This utility provides a simple Python script for listing network interfaces and 
 - **List Network Interfaces**: Easily list all network interfaces available on your system.
 - **Change MAC Address**: Change the MAC address of a specified network interface.
 
+# MUST RUN CMD.EXE IN ADMIN MODE
+
 ## Requirements
 
 - Python 3.x
