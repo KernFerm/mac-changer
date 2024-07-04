@@ -42,6 +42,7 @@ Replace `"Your Interface Name"` with the name of your network interface and `"Ne
 ## Disclaimer
 
 This tool is for educational purposes only. Use it at your own risk. The author is not responsible for any misuse or damage caused by this program. `IF YOUR ISP COMES AFTER YOU THAT IS ON YOU, I AM NOT HELD RESPSONIBLE`
+[**LICENSE AGREEMENT**](https://github.com/KernFerm/mac-changer/blob/main/LICENSE)
 
 ## License
 
