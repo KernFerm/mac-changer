@@ -3,38 +3,38 @@ import re
 import platform
 
 def get_interface():
-    if platform.system() == "Windows":
-        # List all network interfaces on Windows
-        output = subprocess.check_output("wmic nic get NetConnectionID", shell=True).decode()
-        interfaces = output.split('\n')[1:-1]
-        return [iface.strip() for iface in interfaces if iface.strip()]
-    elif platform.system() == "Linux":
-        # List all network interfaces on Linux
-        output = subprocess.check_output("ls /sys/class/net", shell=True).decode()
-        interfaces = output.split('\n')[:-1]
-        return interfaces
-    else:
-        print("Unsupported operating system.")
+    try:
+        if platform.system() == "Windows":
+            output = subprocess.check_output("wmic nic where NetEnabled=true get NetConnectionID", shell=True).decode()
+            interfaces = output.split('\n')[1:-1]
+            return [iface.strip() for iface in interfaces if iface.strip()]
+        elif platform.system() == "Linux":
+            output = subprocess.check_output("ls /sys/class/net", shell=True).decode()
+            interfaces = output.split('\n')[:-1]
+            return interfaces
+        else:
+            print("Unsupported operating system.")
+            return []
+    except subprocess.CalledProcessError as e:
+        print(f"Error listing interfaces: {e}")
         return []
 
 def change_mac_address(interface, new_mac):
-    if platform.system() == "Windows":
-        command = f"wmic path win32_networkadapter where NetConnectionID='{interface}' call disable"
-        subprocess.run(command, shell=True)
-        command = f"wmic path win32_networkadapter where NetConnectionID='{interface}' call setmacaddress '{new_mac}'"
-        subprocess.run(command, shell=True)
-        command = f"wmic path win32_networkadapter where NetConnectionID='{interface}' call enable"
-        subprocess.run(command, shell=True)
-    elif platform.system() == "Linux":
-        subprocess.run(f"sudo ifconfig {interface} down", shell=True)
-        subprocess.run(f"sudo ifconfig {interface} hw ether {new_mac}", shell=True)
-        subprocess.run(f"sudo ifconfig {interface} up", shell=True)
+    try:
+        if platform.system() == "Windows":
+            subprocess.run(f"netsh interface set interface name='{interface}' admin=disable", shell=True, check=True)
+            subprocess.run(f"netsh interface set interface name='{interface}' admin=enable", shell=True, check=True)
+            print(f"MAC address for {interface} changed to {new_mac} (Please verify manually on Windows)")
+        elif platform.system() == "Linux":
+            subprocess.run(f"sudo ifconfig {interface} down", shell=True, check=True)
+            subprocess.run(f"sudo ifconfig {interface} hw ether {new_mac}", shell=True, check=True)
+            subprocess.run(f"sudo ifconfig {interface} up", shell=True, check=True)
+            print(f"MAC address for {interface} changed to {new_mac}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error changing MAC address: {e}")
 
 def validate_mac(mac):
-    if re.match(r'^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$', mac):
-        return True
-    else:
-        return False
+    return bool(re.match(r'^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$', mac))
 
 def main():
     interfaces = get_interface()
@@ -45,9 +45,13 @@ def main():
     for i, iface in enumerate(interfaces):
         print(f"{i}: {iface}")
 
-    choice = int(input("Select the interface number: "))
-    if choice < 0 or choice >= len(interfaces):
-        print("Invalid choice.")
+    try:
+        choice = int(input("Select the interface number: "))
+        if choice < 0 or choice >= len(interfaces):
+            print("Invalid choice.")
+            return
+    except ValueError:
+        print("Invalid input. Please enter a number.")
         return
 
     new_mac = input("Enter new MAC address (format: XX:XX:XX:XX:XX:XX): ")
@@ -56,7 +60,6 @@ def main():
         return
 
     change_mac_address(interfaces[choice], new_mac)
-    print(f"MAC address for {interfaces[choice]} changed to {new_mac}")
 
 if __name__ == "__main__":
     main()
