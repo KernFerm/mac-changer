@@ -1,3 +1,9 @@
+## Support the Project ⭐
+
+If you find this project useful, please give it a star! Your support is appreciated and helps keep the project growing. 🌟
+
+-----
+
 # 🌐 Network Interface Utility 🚀
 
 This utility provides a **simple Python script** for listing network interfaces and changing the MAC address on **Windows** and **Linux** systems 🖥️.
